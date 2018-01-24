@@ -105,6 +105,30 @@ class RequestGenerator
     private $mustache;
 
     /**
+     * @var string
+     */
+    private $projectDirectory = '';
+
+    /**
+     * @var string
+     */
+    private $packageDirectory = '';
+
+    /**
+     * @var array
+     */
+    static private $templateCache = [];
+
+    /**
+     * RequestGenerator constructor.
+     */
+    public function __construct()
+    {
+        $this->packageDirectory = __DIR__ . '/..';
+        $this->projectDirectory = __DIR__ . '/../../../..';
+    }
+
+    /**
      * Call define and build a returnable datamodel
      */
     public function buildDefinableDataModel()
@@ -116,7 +140,7 @@ class RequestGenerator
         $this->mustache = new \Mustache_Engine();
 
         //Login but use vcr
-        $vcr = \Dshafik\GuzzleHttp\VcrHandler::turnOn(__DIR__ . '/../../tests/data/fixtures/action-login.json');
+        $vcr = \Dshafik\GuzzleHttp\VcrHandler::turnOn($this->projectDirectory . '/tests/data/fixtures/action-login.json');
         $api->setCustomGuzzleHandler($vcr);
 
         $login = new \RescueGroups\Request\Actions\Login();
@@ -129,7 +153,7 @@ class RequestGenerator
         {
             //$className = ucfirst($type);
 
-            $vcr = \Dshafik\GuzzleHttp\VcrHandler::turnOn(__DIR__ . '/../../tests/data/fixtures/define-'.$className.'.json');
+            $vcr = \Dshafik\GuzzleHttp\VcrHandler::turnOn($this->projectDirectory .  '/tests/data/fixtures/define-'.$className.'.json');
             $api->setCustomGuzzleHandler($vcr);
 
             $fullClassName = '\RescueGroups\Request\Objects\\' . $className . '\Define';
@@ -159,9 +183,9 @@ class RequestGenerator
             }
         }
 
-        $mainDocData = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/documentation-index.mustache'), ['date'=>date(static::DATE_FORMAT), 'queryLinks'=>$queryDocLinks]);
+        $mainDocData = $this->mustache->render($this->getTemplate('documentation-index.mustache'), ['date'=>date(static::DATE_FORMAT), 'queryLinks'=>$queryDocLinks]);
 
-        file_put_contents(__DIR__ . '/../../doc/request/readme.md', $mainDocData);
+        file_put_contents($this->projectDirectory . '/doc/request/readme.md', $mainDocData);
     }
 
     /**
@@ -170,7 +194,7 @@ class RequestGenerator
      * @param $className
      * @param $type
      * @param $definition
-     * @return QueryRequest[]
+     * @return \stdClass
      */
     private function buildDefinedObjectQueryObjects($className, $type, $definition)
     {
@@ -208,9 +232,9 @@ class RequestGenerator
     {
         if ($query->requestClassName != 'Edit') return;
 
-        $responseObject = __DIR__ . '/../../src/Objects/' . $query->responseClassName . '.php';
+        $responseObject = $this->projectDirectory . '/src/Objects/' . $query->responseClassName . '.php';
 
-        $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/response-object.mustache'), $query);
+        $data = $this->mustache->render($this->getTemplate('response-object.mustache'), $query);
 
         file_put_contents($responseObject, $data);
     }
@@ -222,9 +246,9 @@ class RequestGenerator
      */
     private function outputParameterAddClass(QueryRequest $query)
     {
-        $responseObject = __DIR__ . '/../../src/Objects/Create/' . $query->responseClassName . '.php';
+        $responseObject = $this->projectDirectory . '/src/Objects/Create/' . $query->responseClassName . '.php';
 
-        $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/create-object.mustache'), $query);
+        $data = $this->mustache->render($this->getTemplate('create-object.mustache'), $query);
 
         file_put_contents($responseObject, $data);
     }
@@ -236,7 +260,7 @@ class RequestGenerator
      */
     private function outputQueryRequestClass(QueryRequest $query)
     {
-        $dir = __DIR__ . '/../../src/Request/Objects/' . $query->className;
+        $dir = $this->projectDirectory . '/src/Request/Objects/' . $query->className;
 
         if (!is_dir($dir))
         {
@@ -247,31 +271,31 @@ class RequestGenerator
 
         if ($query->isSearch())
         {
-            $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/search-query.mustache'), $query);
+            $data = $this->mustache->render($this->getTemplate('search-query.mustache'), $query);
         }
         elseif ($query->isList())
         {
-            $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/list-query.mustache'), $query);
+            $data = $this->mustache->render($this->getTemplate('list-query.mustache'), $query);
         }
         elseif ($query->isEdit())
         {
-            $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/edit-query.mustache'), $query);
+            $data = $this->mustache->render($this->getTemplate('edit-query.mustache'), $query);
         }
         elseif ($query->isAdd())
         {
-            $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/add-query.mustache'), $query);
+            $data = $this->mustache->render($this->getTemplate('add-query.mustache'), $query);
         }
         elseif ($query->isParameterAdd())
         {
-            $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/add-create-query.mustache'), $query);
+            $data = $this->mustache->render($this->getTemplate('add-create-query.mustache'), $query);
         }
         elseif ($query->isDefine())
         {
-            $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/define-query.mustache'), $query);
+            $data = $this->mustache->render($this->getTemplate('define-query.mustache'), $query);
         }
         elseif ($query->isRegular())
         {
-            $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/parameters-query.mustache'), $query);
+            $data = $this->mustache->render($this->getTemplate('parameters-query.mustache'), $query);
         }
 
 
@@ -283,7 +307,7 @@ class RequestGenerator
      */
     private function outputQueryRequestTestClass(QueryRequest $query)
     {
-        $dir = __DIR__ . '/../../tests/Request/Objects/' . $query->className;
+        $dir = $this->projectDirectory . '/tests/Request/Objects/' . $query->className;
 
         if (!is_dir($dir))
         {
@@ -294,34 +318,52 @@ class RequestGenerator
 
         if ($query->isSearch())
         {
-            $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/search-query-test.mustache'), $query);
+            $data = $this->mustache->render($this->getTemplate('search-query-test.mustache'), $query);
         }
         elseif ($query->isList())
         {
-            $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/list-query-test.mustache'), $query);
+            $data = $this->mustache->render($this->getTemplate('list-query-test.mustache'), $query);
         }
         elseif ($query->isEdit())
         {
-            $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/edit-query-test.mustache'), $query);
+            $data = $this->mustache->render($this->getTemplate('edit-query-test.mustache'), $query);
         }
         elseif ($query->isAdd())
         {
-            $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/add-query-test.mustache'), $query);
+            $data = $this->mustache->render($this->getTemplate('add-query-test.mustache'), $query);
         }
         elseif ($query->isParameterAdd())
         {
-            $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/add-create-query-test.mustache'), $query);
+            $data = $this->mustache->render($this->getTemplate('add-create-query-test.mustache'), $query);
         }
         elseif ($query->isDefine())
         {
-            $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/define-query-test.mustache'), $query);
+            $data = $this->mustache->render($this->getTemplate('define-query-test.mustache'), $query);
         }
         elseif ($query->isRegular() || $query->isList())
         {
-            $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/parameters-query-test.mustache'), $query);
+            $data = $this->mustache->render($this->getTemplate('parameters-query-test.mustache'), $query);
         }
 
         file_put_contents($requestFileName, $data);
+    }
+
+    /**
+     * Get template
+     *
+     * @param $templateName
+     * @return mixed
+     */
+    private function getTemplate($templateName)
+    {
+        if (!empty(static::$templateCache[$templateName]))
+        {
+            return static::$templateCache[$templateName];
+        }
+
+        static::$templateCache[$templateName] = file_get_contents($this->packageDirectory . '/resources/templates/' . $templateName);
+
+        return static::$templateCache[$templateName];
     }
 
     /**
@@ -331,7 +373,7 @@ class RequestGenerator
      */
     private function outputQueryDocumentation($queries)
     {
-        $docDir = __DIR__ . '/../../doc/request/' . $queries->className;
+        $docDir = $this->projectDirectory . '/doc/request/' . $queries->className;
 
         if (!is_dir($docDir))
         {
@@ -340,7 +382,7 @@ class RequestGenerator
 
         $docFile = $docDir . '/readme.md';
 
-        $data = $this->mustache->render(file_get_contents(__DIR__ . '/new-templates/object-query-docs.mustache'), $queries);
+        $data = $this->mustache->render($this->getTemplate('object-query-docs.mustache'), $queries);
 
         file_put_contents($docFile, $data);
     }

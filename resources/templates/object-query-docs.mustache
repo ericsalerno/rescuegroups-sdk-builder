@@ -101,7 +101,7 @@ Performs {{typeName}}.{{objectAction}} query.
     $query = new \RescueGroups\Request\Objects\{{className}}\{{requestClassName}}();
 
     {{# fields}}
-    $query->set{{ sdkFieldName }}("{{friendlyName}}");
+    $query->set{{ parameterName }}("{{friendlyName}}");
     {{/ fields}}
 
     $result = $api->executeRequest($query);

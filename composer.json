@@ -17,13 +17,8 @@
   "support":{
     "email": "salernolabs@gmail.com"
   },
-  "config": {
-    "preferred-install": "dist"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^6.4"
-  },
   "require": {
+    "dshafik/guzzlehttp-vcr": "dev-master",
     "guzzlehttp/guzzle": "^6.3",
     "psr/log": "^1.0",
     "mustache/mustache": "^2.12"
