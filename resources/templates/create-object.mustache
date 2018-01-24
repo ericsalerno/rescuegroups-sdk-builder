@@ -1,0 +1,51 @@
+<?php
+/**
+ * {{responseClassName}} Creation Object
+ *
+ * @package RescueGroups
+ * @subpackage Response
+ * @author SourceGenerator
+ */
+namespace RescueGroups\Objects\Create;
+
+class {{responseClassName}} implements \RescueGroups\Objects\APIEncodableInterface
+{
+    {{# fields}}
+    /**
+     * {{friendlyName}}{{# isKey}}, Primary Key{{/ isKey}}
+     *
+     * @var {{type}}
+     */
+    public ${{sdkFieldName}} = null;
+
+    {{/ fields}}
+
+    /**
+     * {{responseClassName}} Constructor
+     * @var \stdClass|null $inputData
+     */
+    public function __construct($inputData = null)
+    {
+        if (empty($inputData)) return;
+
+        {{# fields}}
+        if (!empty($inputData->{{name}})) $this->{{sdkFieldName}} = $inputData->{{name}};
+        {{/ fields}}
+    }
+
+    /**
+     * Get array mapping for API functions
+     *
+     * @param bool $includeId
+     * @return array
+     */
+    public function getArray($includeId = true)
+    {
+        $output = [];
+        {{# fields}}
+        if ({{# isKey}}$includeId && {{/ isKey}}$this->{{sdkFieldName}} !== null) $output['{{name}}'] = $this->{{sdkFieldName}};
+        {{/ fields}}
+
+        return $output;
+    }
+}

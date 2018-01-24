@@ -1,0 +1,64 @@
+<?php
+/**
+ * {{responseClassName}} Response Object
+ *
+ * @package RescueGroups
+ * @subpackage Response
+ * @author SourceGenerator
+ */
+namespace RescueGroups\Objects;
+
+class {{responseClassName}} implements \RescueGroups\Objects\APIEncodableInterface
+{
+    use \RescueGroups\Objects\Traits\APIReadWrite;
+
+    {{# fields}}
+    /**
+     * {{friendlyName}}{{# isKey}}, Primary Key{{/ isKey}}
+     *
+     * @var {{type}}
+     */
+    public ${{sdkFieldName}} = null;
+
+    {{/ fields}}
+
+    /**
+     * Mapping fields
+     * @var array
+     */
+    static private $apiMapping = [
+        'id' => '{{# fields}}{{# isKey}}{{sdkFieldName}}{{/ isKey}}{{/ fields}}',
+        'input' => [
+            {{# fields}}
+            '{{name}}' => '{{sdkFieldName}}',
+            {{/ fields}}
+        ],
+        'output' => [
+            {{# fields}}
+            '{{sdkFieldName}}' => '{{name}}',
+            {{/ fields}}
+        ]
+    ];
+
+    /**
+     * {{responseClassName}} Constructor
+     * @var \stdClass|null $inputData
+     */
+    public function __construct($inputData = null)
+    {
+        if (empty($inputData)) return;
+
+        $this->mapFromAPI($inputData);
+    }
+
+    /**
+     * Get array mapping for API functions
+     *
+     * @param bool $includeId
+     * @return array
+     */
+    public function getArray($includeId = true)
+    {
+        return $this->mapToAPI($includeId);
+    }
+}

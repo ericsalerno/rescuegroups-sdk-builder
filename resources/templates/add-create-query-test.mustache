@@ -1,0 +1,43 @@
+<?php
+/**
+ * {{className}} {{requestName}} Request Test
+ *
+ * @package RescueGroups
+ * @subpackage Tests
+ * @author SourceGenerator
+ */
+namespace RescueGroups\Tests\Request\Objects\{{className}};
+
+class {{requestClassName}}Test extends \PHPUnit\Framework\TestCase
+{
+    use \RescueGroups\Tests\Traits\APISetup;
+
+    /**
+     * Test Query
+     */
+    public function testQuery()
+    {
+        $this->apiLogin();
+
+        $query = new \RescueGroups\Request\Objects\{{className}}\{{requestClassName}}();
+
+        $testObject = new \RescueGroups\Objects\Create\{{responseClassName}}();
+        {{# fields}}
+            {{^ isKey}}
+        $testObject->{{sdkFieldName}} = 'testValue {{friendlyName}}';
+            {{/ isKey}}
+        {{/ fields}}
+
+        $query->add{{responseClassName}}($testObject);
+
+        $data = $this->api->getPostObject($query);
+
+        $this->assertEquals('{{typeName}}', $data['objectType']);
+        $this->assertEquals('{{requestName}}', $data['objectAction']);
+        {{# fields}}
+            {{^ isKey}}
+        $this->assertEquals('testValue {{friendlyName}}', $data['values'][0]['{{name}}']);
+            {{/ isKey}}
+        {{/ fields}}
+    }
+}

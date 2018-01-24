@@ -1,0 +1,67 @@
+<?php
+/**
+ * {{className}} {{requestClassName}} Request
+ *
+ * @package RescueGroups
+ * @subpackage Request
+ * @author SourceGenerator
+ */
+namespace RescueGroups\Request\Objects\{{className}};
+
+class {{requestClassName}} extends \RescueGroups\Request\Objects\Base implements \RescueGroups\Request\ParametersInterface
+{
+    /**
+     * Query object type
+     */
+    const QUERY_OBJECT_TYPE = '{{typeName}}';
+
+    /**
+     * Query object action
+     */
+    const QUERY_OBJECT_ACTION = '{{objectAction}}';
+
+    /**
+     * Query login is required
+     */
+    const QUERY_LOGIN_REQUIRED = {{loginRequired}};
+
+    /**
+     * Editable {{$className}} array
+     *
+     * @var \RescueGroups\Objects\{{responseClassName}}[]
+     */
+    protected $editObjects = [];
+
+    /**
+     * Set the editable object
+     *
+     * @param \RescueGroups\Objects\{{responseClassName}} $editObject
+     * @return $this
+     */
+    public function update{{responseClassName}}(\RescueGroups\Objects\{{responseClassName}} $editObject)
+    {
+        $this->editObjects[] = $editObject;
+
+        return $this;
+    }
+
+    /**
+     * Apply request parameters to the outgoing request
+     *
+     * @param $parameterArray
+     */
+    public function applyParameters(&$parameterArray)
+    {
+        if (empty($this->editObjects))
+        {
+            throw new \RescueGroups\Exceptions\InvalidParameter("Missing editable object for query " . __CLASS__);
+        }
+
+        $parameterArray['values'] = [];
+
+        foreach ($this->editObjects as $object)
+        {
+            $parameterArray['values'][] = $object->getArray();
+        }
+    }
+}

@@ -1,0 +1,27 @@
+<?php
+/**
+ * {{className}} {{requestClassName}} Request
+ *
+ * @package RescueGroups
+ * @subpackage Request
+ * @author SourceGenerator
+ */
+namespace RescueGroups\Request\Objects\{{className}};
+
+class {{requestClassName}} extends \RescueGroups\Request\Objects\Base
+{
+    /**
+     * Query object type
+     */
+    const QUERY_OBJECT_TYPE = '{{typeName}}';
+
+    /**
+     * Query object action
+     */
+    const QUERY_OBJECT_ACTION = '{{objectAction}}';
+
+    /**
+     * Query login is required
+     */
+    const QUERY_LOGIN_REQUIRED = {{loginRequired}};
+}

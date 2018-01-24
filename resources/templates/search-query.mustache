@@ -1,0 +1,80 @@
+<?php
+/**
+ * {{className}} {{requestClassName}} Request
+ *
+ * @package RescueGroups
+ * @subpackage Request
+ * @author SourceGenerator
+ */
+namespace RescueGroups\Request\Objects\{{className}};
+
+class {{requestClassName}} extends \RescueGroups\Request\Objects\Base implements
+    \RescueGroups\Request\ParametersInterface,
+    \RescueGroups\Request\ProcessResponseInterface
+{
+    use \RescueGroups\Request\Traits\SearchParameters;
+
+    /**
+     * Query object type
+     */
+    const QUERY_OBJECT_TYPE = '{{typeName}}';
+
+    /**
+     * Query object action
+     */
+    const QUERY_OBJECT_ACTION = '{{objectAction}}';
+
+    /**
+     * Query login is required
+     */
+    const QUERY_LOGIN_REQUIRED = {{loginRequired}};
+
+    {{#fields}}
+    const FIELD_{{constantName}} = '{{sdkFieldName}}';
+    {{/fields}}
+
+    /**
+     * Filterable Fields
+     *
+     * @var array
+     */
+    private $objectFields = [
+    {{#fields}}
+        "{{sdkFieldName}}" => [{{{required}}}, '{{name}}'],
+    {{/fields}}
+    ];
+
+    /**
+     * Process the response with associated output object
+     * @param \RescueGroups\API $api
+     * @param \stdClass $data
+     * @returns \RescueGroups\Objects\{{responseClassName}}[]
+     */
+    public function processResponse(\RescueGroups\API $api, $data)
+    {
+        if (empty($data)) return [];
+
+        if (is_array($data) || is_object($data))
+        {
+            $output = [];
+            foreach ($data as $object)
+            {
+                $output[] = new \RescueGroups\Objects\{{responseClassName}}($object);
+            }
+
+            return $output;
+        }
+
+        return [new \RescueGroups\Objects\{{responseClassName}}($data)];
+    }
+
+    /**
+     * Apply request parameters to the outgoing request
+     *
+     * @param $parameterArray
+     */
+    public function applyParameters(&$parameterArray)
+    {
+        $this->addSearchParameters($parameterArray);
+    }
+}

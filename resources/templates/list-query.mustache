@@ -1,0 +1,70 @@
+<?php
+/**
+ * {{className}} {{requestClassName}} Request
+ *
+ * @package RescueGroups
+ * @subpackage Request
+ * @author SourceGenerator
+ */
+namespace RescueGroups\Request\Objects\{{className}};
+
+class {{requestClassName}} extends \RescueGroups\Request\Objects\Base implements \RescueGroups\Request\ParametersInterface
+{
+    /**
+     * Query object type
+     */
+    const QUERY_OBJECT_TYPE = '{{typeName}}';
+
+    /**
+     * Query object action
+     */
+    const QUERY_OBJECT_ACTION = '{{objectAction}}';
+
+    /**
+     * Query login is required
+     */
+    const QUERY_LOGIN_REQUIRED = {{loginRequired}};
+
+    {{#fields}}
+    /**
+     * {{friendlyName}}
+     *
+     * @var {{type}}
+     */
+    private ${{sdkFieldName}} = null;
+
+    {{/fields}}
+
+    {{#fields}}
+    /**
+     * Set {{friendlyName}}
+     *
+     * @param {{type}} $value
+     * @return $this
+     */
+    public function set{{parameterName}}($value)
+    {
+        $this->{{sdkFieldName}} = $value;
+
+        return $this;
+    }
+
+    {{/fields}}
+
+    /**
+     * Apply request parameters to the outgoing request
+     *
+     * @param $parameterArray
+     */
+    public function applyParameters(&$parameterArray)
+    {
+        if (empty($parameterArray['values'])) $parameterArray['values'] = [];
+
+        $value = [];
+        {{#fields}}
+        if ($this->{{sdkFieldName}} !== null) $value["{{name}}"] = $this->{{sdkFieldName}};
+        {{/fields}}
+
+        if (!empty($value)) $parameterArray['values'][] = $value;
+    }
+}
