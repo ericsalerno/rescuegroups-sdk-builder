@@ -10,6 +10,13 @@ This tool is designed to be run from the main directory of the source applicatio
 
 ### 1. Include this library in your composer.json
 
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/ericsalerno/rescuegroups-sdk-builder"
+        }
+    ],
+    ...
     "require-dev": {
         ...
         "salernolabs/rescuegroups-sdk-builder": "dev-master"
