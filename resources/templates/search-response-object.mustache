@@ -1,18 +1,18 @@
 <?php
 /**
- * {{responseClassName}} Object
+ * {{responseClassName}} Search Response Object
  *
  * @package RescueGroups
  * @subpackage Objects
  * @author SourceGenerator
  */
-namespace RescueGroups\Objects;
+namespace RescueGroups\Objects\Search;
 
-class {{responseClassName}} implements \RescueGroups\Objects\APIEncodableInterface
+class {{responseClassName}}{{#searchCanExtendEdit}} extends \RescueGroups\Objects\{{responseClassName}}{{/searchCanExtendEdit}} implements \RescueGroups\Objects\APIEncodableInterface
 {
     use \RescueGroups\Objects\Traits\APIReadWrite;
 
-    {{# fields}}
+    {{# diffFields}}
     /**
      * {{friendlyName}}{{# isKey}}, Primary Key{{/ isKey}}
      *
@@ -20,7 +20,7 @@ class {{responseClassName}} implements \RescueGroups\Objects\APIEncodableInterfa
      */
     public ${{sdkFieldName}} = null;
 
-    {{/ fields}}
+    {{/ diffFields}}
 
     /**
      * Mapping fields
@@ -40,6 +40,7 @@ class {{responseClassName}} implements \RescueGroups\Objects\APIEncodableInterfa
         ]
     ];
 
+    {{^ searchCanExtendEdit}}
     /**
      * {{responseClassName}} Constructor
      * @var \stdClass|null $inputData
@@ -61,4 +62,5 @@ class {{responseClassName}} implements \RescueGroups\Objects\APIEncodableInterfa
     {
         return $this->mapToAPI($includeId);
     }
+    {{/ searchCanExtendEdit}}
 }

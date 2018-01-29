@@ -59,13 +59,13 @@ class {{requestClassName}} extends \RescueGroups\Request\Objects\Base implements
             $output = [];
             foreach ($data as $object)
             {
-                $output[] = new \RescueGroups\Objects\{{responseClassName}}($object);
+                $output[] = new \RescueGroups\Objects\{{# searchCanExtendEdit}}Search\{{/ searchCanExtendEdit}}{{responseClassName}}($object);
             }
 
             return $output;
         }
 
-        return [new \RescueGroups\Objects\{{responseClassName}}($data)];
+        return [new \RescueGroups\Objects\{{# searchCanExtendEdit}}Search\{{/ searchCanExtendEdit}}{{responseClassName}}($data)];
     }
 
     /**

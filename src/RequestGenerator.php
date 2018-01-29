@@ -203,6 +203,8 @@ class RequestGenerator
         $output->typeName = $type;
         $output->requests = [];
 
+        $editRequest = $queryRequest = null;
+
         foreach ($definition as $request => $requestData)
         {
             $queryRequest = new QueryRequest($className, $type, $request, $requestData);
@@ -211,7 +213,12 @@ class RequestGenerator
 
             if ($queryRequest->requestClassName == 'Edit')
             {
-                $this->outputResponseClass($queryRequest);
+                $editRequest = clone $queryRequest;
+            }
+
+            if ($queryRequest->requestClassName == 'Search')
+            {
+                $searchRequest = clone $queryRequest;
             }
 
             if ($queryRequest->isParameterAdd())
@@ -219,6 +226,33 @@ class RequestGenerator
                 $this->outputParameterAddClass($queryRequest);
             }
         }
+
+        // Get diff of fields between search and edit, then extend the search from the edit
+        if (!empty($editRequest) && !empty($searchRequest))
+        {
+            $hasFields = [];
+            foreach ($editRequest->fields as $index => $field)
+            {
+                $hasFields[$field->name] = true;
+            }
+
+            foreach ($searchRequest->fields as $index => $field)
+            {
+                if (!empty($hasFields[$field->name]))
+                {
+                    $searchRequest->searchCanExtendEdit = true;
+                }
+                else
+                {
+                    $searchRequest->diffFields[] = $field;
+                }
+            }
+
+            if (empty($searchRequest->diffFields)) $searchRequest->diffFields = $searchRequest->fields;
+        }
+
+        if (!empty($editRequest)) $this->outputResponseClass($editRequest);
+        if (!empty($searchRequest) && $searchRequest->searchCanExtendEdit) $this->outputSearchResponseClass($searchRequest);
 
         return $output;
     }
@@ -235,6 +269,22 @@ class RequestGenerator
         $responseObject = $this->projectDirectory . '/src/Objects/' . $query->responseClassName . '.php';
 
         $data = $this->mustache->render($this->getTemplate('response-object.mustache'), $query);
+
+        file_put_contents($responseObject, $data);
+    }
+
+    /**
+     * Output search response class
+     *
+     * @param QueryRequest $query
+     */
+    private function outputSearchResponseClass(QueryRequest $query)
+    {
+        if ($query->requestClassName != 'Search') return;
+
+        $responseObject = $this->projectDirectory . '/src/Objects/Search/' . $query->responseClassName . '.php';
+
+        $data = $this->mustache->render($this->getTemplate('search-response-object.mustache'), $query);
 
         file_put_contents($responseObject, $data);
     }

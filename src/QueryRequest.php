@@ -60,6 +60,16 @@ class QueryRequest
     public $date;
 
     /**
+     * @var bool
+     */
+    public $searchCanExtendEdit = false;
+
+    /**
+     * @var QueryField[]
+     */
+    public $diffFields = [];
+
+    /**
      * QueryRequest constructor.
      */
     public function __construct($className, $type, $request, $requestData)
