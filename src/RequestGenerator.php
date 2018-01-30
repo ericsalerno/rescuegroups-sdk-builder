@@ -203,7 +203,8 @@ class RequestGenerator
         $output->typeName = $type;
         $output->requests = [];
 
-        $editRequest = $queryRequest = null;
+        $editRequest = null;
+        $queryRequest = null;
 
         foreach ($definition as $request => $requestData)
         {
@@ -213,12 +214,12 @@ class RequestGenerator
 
             if ($queryRequest->requestClassName == 'Edit')
             {
-                $editRequest = clone $queryRequest;
+                $editRequest =& $output->requests[count($output->requests) - 1];
             }
 
             if ($queryRequest->requestClassName == 'Search')
             {
-                $searchRequest = clone $queryRequest;
+                $searchRequest =& $output->requests[count($output->requests) - 1];
             }
 
             if ($queryRequest->isParameterAdd())
