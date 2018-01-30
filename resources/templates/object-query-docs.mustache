@@ -7,7 +7,7 @@ This is the documentation for the {{className}} queries against the [RescueGroup
 {{# requests}}
 ## {{requestClassName}}
     {{# isSearch}}
-Performs {{typeName}}.{{objectAction}} search query. This query returns an array of [\RescueGroups\Objects\{{responseClassName}}](../../../src/Objects/{{responseClassName}}.php) objects.
+Performs {{typeName}}.{{objectAction}} search query. This query returns an array of [\RescueGroups\Objects\{{# searchCanExtendEdit}}Search\{{/ searchCanExtendEdit}}{{responseClassName}}](../../../src/Objects/{{# searchCanExtendEdit}}Search/{{/ searchCanExtendEdit}}{{responseClassName}}.php) objects.
 
 ### Example Search Query
 

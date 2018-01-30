@@ -203,8 +203,14 @@ class RequestGenerator
         $output->typeName = $type;
         $output->requests = [];
 
+        /**
+         * @var QueryRequest $editRequest
+         * @var QueryRequest $searchRequest
+         * @var QueryRequest $publicSearchRequest
+         */
         $editRequest = null;
-        $queryRequest = null;
+        $searchRequest = null;
+        $publicSearchRequest = null;
 
         foreach ($definition as $request => $requestData)
         {
@@ -220,6 +226,11 @@ class RequestGenerator
             if ($queryRequest->requestClassName == 'Search')
             {
                 $searchRequest =& $output->requests[count($output->requests) - 1];
+            }
+
+            if ($queryRequest->requestClassName == 'PublicSearch')
+            {
+                $publicSearchRequest =& $output->requests[count($output->requests) - 1];
             }
 
             if ($queryRequest->isParameterAdd())
@@ -241,6 +252,7 @@ class RequestGenerator
             {
                 if (!empty($hasFields[$field->name]))
                 {
+                    if (!empty($publicSearchRequest)) $publicSearchRequest->searchCanExtendEdit = true;
                     $searchRequest->searchCanExtendEdit = true;
                 }
                 else
